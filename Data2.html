@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC 103: DSA & C++ Quiz</title>
+    <style>
+        :root {
+            --google-purple: #673ab7;
+            --google-bg: #f0ebf8;
+            --text-main: #202124;
+            --correct: #2e7d32;
+            --incorrect: #d93025;
+            --border: #dadce0;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--google-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 770px;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: white;
+            border-top: 10px solid var(--google-purple);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        .header-card h1 { font-size: 32px; margin: 0 0 10px 0; }
+        .header-card p { color: #70757a; font-size: 14px; }
+
+        /* Question Cards */
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.3s;
+        }
+
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .option:hover { background-color: #f8f9fa; }
+
+        input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--google-purple);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            background-color: var(--google-purple);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Review Section */
+        #review-section { display: none; }
+        
+        .review-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 5px solid transparent;
+        }
+
+        .correct-card { border-left-color: var(--correct); }
+        .incorrect-card { border-left-color: var(--incorrect); }
+
+        .answer-label { font-weight: bold; margin-top: 8px; display: block; }
+        .user-choice { color: #5f6368; }
+        .correct-text { color: var(--correct); font-weight: bold; }
+        .wrong-text { color: var(--incorrect); }
+
+        .score-summary {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <h1>CC 103 Comprehensive Quiz</h1>
+        <p>Data Structures, Algorithms, Arrays, Structs, and Pointers</p>
+        <p style="color: var(--incorrect);">* Required</p>
+    </div>
+
+    <form id="quiz-form">
+        <div id="questions-container"></div>
+        <button type="submit" class="btn-submit">Submit</button>
+    </form>
+
+    <div id="review-section">
+        <div class="score-summary">
+            <h2>Your Score</h2>
+            <div id="final-score" style="font-size: 48px; color: var(--google-purple);">0 / 60</div>
+            <button class="btn-submit" style="margin-top:20px" onclick="location.reload()">Clear form</button>
+        </div>
+        <div id="review-container"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        // CHAPTER 1: INTRO TO DSA
+        { q: "An algorithm is a set of well-defined ______ to solve a particular problem.", a: ["Hardwares", "Instructions", "Variables", "Memories"], c: 1 },
+        { q: "Which characteristic means an algorithm must be most effective in solving problems?", a: ["Feasibility", "Input", "Unambiguous", "Independent"], c: 0 },
+        { q: "Which data structure arranges elements in a sequence one after another?", a: ["Non-linear", "Linear", "Graph", "Tree"], c: 1 },
+        { q: "Big O notation (O) answers the question:", a: ["What always happens?", "What is the best that can happen?", "What is the worst that can happen?", "None of the above"], c: 2 },
+        { q: "Big Omega (Ω) represents which case?", a: ["Worst case", "Average case", "Best case", "Base case"], c: 2 },
+        { q: "Which notation describes the exact growth rate (upper and lower bounds are same)?", a: ["Big O", "Big Omega", "Big Theta", "Little o"], c: 2 },
+        { q: "A loop that always runs exactly 'n' times has a complexity of:", a: ["O(1)", "Θ(n)", "Ω(n^2)", "O(log n)"], c: 1 },
+        { q: "Which technique breaks a problem into smaller subproblems and combines them?", a: ["Greedy", "Backtracking", "Divide and Conquer", "Brute Force"], c: 2 },
+        { q: "Space complexity refers to the amount of ______ an algorithm needs.", a: ["Electricity", "Lines of code", "Memory", "Input"], c: 2 },
+        { q: "In a linear search, if the target is found at the first position, complexity is:", a: ["O(n)", "Ω(1)", "Θ(n^2)", "O(log n)"], c: 1 },
+        { q: "Binary search in a sorted array has a best case of:", a: ["Ω(n)", "Ω(log n)", "Ω(1)", "Ω(n!)"], c: 2 },
+        { q: "The 'Greedy' approach makes the choice that seems best at the ______.", a: ["End", "Beginning", "Current moment", "Middle"], c: 2 },
+        { q: "Which technique tries every possible solution until the correct one is found?", a: ["Recursion", "Dynamic Programming", "Brute Force", "Greedy"], c: 2 },
+        { q: "A collection of vertices and edges with only one edge between two vertices is a:", a: ["Stack", "Queue", "Tree", "Array"], c: 2 },
+        { q: "Which data structure is a non-linear collection used for complex relationships?", a: ["Array", "Linked List", "Graph", "Stack"], c: 2 },
+
+        // CHAPTER 2: C++ ARRAYS
+        { q: "An array is an ordered collection of values of the ______ type.", a: ["Mixed", "Random", "Same", "Dynamic"], c: 2 },
+        { q: "All arrays consist of ______ memory locations.", a: ["Scattered", "Contiguous", "Virtual", "Static"], c: 1 },
+        { q: "What is the index of the first element in a C++ array?", a: ["1", "0", "-1", "Any"], c: 1 },
+        { q: "To access the 4th element of 'arr', you use:", a: ["arr(4)", "arr[3]", "arr[4]", "arr{3}"], c: 1 },
+        { q: "Which array type is made up of one row or one column?", a: ["1D Array", "2D Array", "3D Array", "Matrix"], c: 0 },
+        { q: "A 2D array is the most basic type of ______ array.", a: ["Linear", "Single", "Multi-dimensional", "Static"], c: 2 },
+        { q: "How many elements does 'int arr[2][5]' contain?", a: ["7", "10", "5", "2"], c: 1 },
+        { q: "In 'int arr[3][2]', how many columns are there?", a: ["3", "2", "6", "1"], c: 1 },
+        { q: "Which keyword allows the compiler to determine the data type in a for-each loop?", a: ["var", "auto", "int", "struct"], c: 1 },
+        { q: "The 'Range-based for loop' is also known as a:", a: ["While loop", "Infinite loop", "For-each loop", "Nested loop"], c: 2 },
+        { q: "Visiting each element in an array exactly once is called:", a: ["Insertion", "Deletion", "Traversal", "Sorting"], c: 2 },
+        { q: "What is required to keep track of the current position during traversal?", a: ["A pointer only", "A loop control variable (index)", "A struct", "A constant"], c: 1 },
+        { q: "Array elements can be accessed via their ______.", a: ["Value", "Index", "Memory address", "Name"], c: 1 },
+        { q: "What does 'int nums[5] = {10, 20};' do to the remaining 3 elements?", a: ["Error", "Random values", "Initializes to 0", "Leaves empty"], c: 2 },
+        { q: "A 3D array is conceptually an array of ______.", a: ["Integers", "Strings", "2D arrays", "Pointers"], c: 2 },
+
+        // CHAPTER 3: STRUCTS & POINTERS
+        { q: "A 'struct' is a ______ data type.", a: ["Primitive", "System", "User-defined", "Global"], c: 2 },
+        { q: "Variables inside a structure are called:", a: ["Functions", "Members", "Links", "Elements"], c: 1 },
+        { q: "Unlike an array, a structure can contain ______ data types.", a: ["Same", "Different", "Only integer", "Only string"], c: 1 },
+        { q: "Which keyword is used to create a structure?", a: ["structure", "class", "struct", "typedef"], c: 2 },
+        { q: "Which operator is used to access members of a struct variable?", a: ["Arrow (->)", "Dot (.)", "Colon (:)", "Ampersand (&)"], c: 1 },
+        { q: "In 'Person p1;', 'Person' represents the:", a: ["Variable name", "Structure tag/type", "Member", "Function"], c: 1 },
+        { q: "A structure within another structure is a ______ structure.", a: ["Linked", "Double", "Nested", "Hybrid"], c: 2 },
+        { q: "Passing a struct to a function by ______ creates a local copy.", a: ["Reference", "Pointer", "Value", "Index"], c: 2 },
+        { q: "What symbol indicates passing by reference in C++ function parameters?", a: ["*", "&", "#", "."], c: 1 },
+        { q: "A pointer is a variable that stores the ______ of another variable.", a: ["Value", "Name", "Memory address", "Size"], c: 2 },
+        { q: "The 'address-of' operator is:", a: ["*", ".", "&", "->"], c: 2 },
+        { q: "To declare a pointer to an integer 'p', you use:", a: ["int p&;", "int *p;", "pointer int p;", "int &p;"], c: 1 },
+        { q: "The process of giving a variable an initial value when declared is:", a: ["Declaration", "Initialization", "Definition", "Allocation"], c: 1 },
+        { q: "To access a struct member via a pointer 'ptr', use the ______ operator.", a: ["Dot (.)", "Arrow (->)", "Star (*)", "Plus (+)"], c: 1 },
+        { q: "Dereferencing a pointer means:", a: ["Getting the address", "Getting the value at the address", "Deleting the pointer", "Changing the name"], c: 1 },
+        { q: "Memory addresses are typically represented in ______ format.", a: ["Binary", "Decimal", "Hexadecimal", "Octal"], c: 2 },
+        { q: "Functions can modify external variables using:", a: ["Pointers/References", "Global constants", "Local variables", "Strings"], c: 0 },
+        { q: "An 'array of structs' allows storing multiple ______ of the same struct type.", a: ["Members", "Functions", "Instances/Records", "Pointers"], c: 2 },
+        { q: "Which data type groups related variables into a single unit?", a: ["Array", "Struct", "Int", "Boolean"], c: 1 },
+        { q: "To print the address of 'x', use:", a: ["cout << x;", "cout << *x;", "cout << &x;", "cout << .x;"], c: 2 },
+
+        // MIXED & RECAP
+        { q: "Linear time complexity is denoted as:", a: ["O(1)", "O(n)", "O(n^2)", "O(log n)"], c: 1 },
+        { q: "Constant time complexity (fastest) is denoted as:", a: ["O(n)", "O(1)", "O(log n)", "O(n!)"], c: 1 },
+        { q: "What is the worst case for a nested loop over 'n' elements?", a: ["O(n)", "O(n^2)", "O(log n)", "O(1)"], c: 1 },
+        { q: "Which is a characteristic of a good algorithm?", a: ["Ambiguous", "Inefficient", "Unambiguous/Clearly defined", "Language-dependent"], c: 2 },
+        { q: "In 'char name[10];', the total size is ______ bytes.", a: ["1", "5", "10", "20"], c: 2 },
+        { q: "The 'ctr' in a for loop traversal often stands for:", a: ["Control", "Center", "Counter", "Constant"], c: 2 },
+        { q: "Which bracket is used to define the body of a struct?", a: ["()", "[]", "{}", "<>"], c: 2 },
+        { q: "A 'bool' member in a struct can store:", a: ["Whole numbers", "Text", "True/False", "Addresses"], c: 2 },
+        { q: "In 'p->age = 20;', 'p' must be a:", a: ["Struct variable", "Pointer to a struct", "Integer", "Array"], c: 1 },
+        { q: "Algorithms are reusable across different ______ languages.", a: ["Programming", "Human", "Spoken", "Database"], c: 0 }
+    ];
+
+    const container = document.getElementById('questions-container');
+
+    // Load Questions
+    questions.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <span class="question-text">${index + 1}. ${item.q} <span style="color:red">*</span></span>
+            ${item.a.map((opt, i) => `
+                <label class="option">
+                    <input type="radio" name="q${index}" value="${i}" required>
+                    ${opt}
+                </label>
+            `).join('')}
+        `;
+        container.appendChild(card);
+    });
+
+    // Handle Submit
+    document.getElementById('quiz-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let score = 0;
+        const reviewContainer = document.getElementById('review-container');
+        reviewContainer.innerHTML = ''; 
+
+        questions.forEach((item, index) => {
+            const selectedInput = document.querySelector(`input[name="q${index}"]:checked`);
+            const selected = selectedInput.value;
+            const isCorrect = parseInt(selected) === item.c;
+            
+            if(isCorrect) score++;
+
+            // Create Review Card
+            const rCard = document.createElement('div');
+            rCard.className = `review-card ${isCorrect ? 'correct-card' : 'incorrect-card'}`;
+            rCard.innerHTML = `
+                <p><strong>${index + 1}. ${item.q}</strong></p>
+                <p class="user-choice">Your answer: <span class="${isCorrect ? 'correct-text' : 'wrong-text'}">${item.a[selected]}</span></p>
+                ${!isCorrect ? `<p class="answer-label">Correct answer: <span class="correct-text">${item.a[item.c]}</span></p>` : ''}
+            `;
+            reviewContainer.appendChild(rCard);
+        });
+
+        // Show Results
+        document.getElementById('quiz-form').style.display = 'none';
+        document.getElementById('review-section').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+        window.scrollTo(0,0);
+    });
+</script>
+
+</body>
+</html>
